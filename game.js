@@ -10,7 +10,7 @@ var graphics;
 var bulletTime = 0
 var bb, circle
 
-var game = new Phaser.Game(w_height, w_width, Phaser.CANVAS, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(w_height, w_width, Phaser.CANVAS, '', { preload: preload, create: create, update: update, render: render});
 
 function preload() {
   game.load.image("bb", "bullet.png")
@@ -18,6 +18,7 @@ function preload() {
 
 function create() {
   graphics = game.add.graphics(w_height/2,w_width/2);
+
   graphics.beginFill();
   graphics.lineStyle(1, 0xFFFFFF, 1);
   graphics.pivot.x = x1/2;
@@ -26,13 +27,17 @@ function create() {
 
   graphics.angle = -90
   graphics.anchor.set(0.5)
+  //graphics.lineTo(0,10)
   graphics.lineTo(0,x1); //pionowa kreska
   graphics.lineTo(y1,y1/2);
-  graphics.endFill();
-  circle = new Phaser.Circle(game.world.centerX, 100,64);
 
+  //graphics.drawCircle(0, 0, 100);
+  graphics.endFill();
   cursors = game.input.keyboard.createCursorKeys();
   game.physics.enable(graphics, Phaser.Physics.ARCADE);
+
+  //graphics.body.setSize(25, 25, 15, -15);
+
   //graphics.body.collideWorldBounds = true;
   //bb = game.add.graphics(w_height/2,w_width/2);
   bullets = game.add.group();
@@ -42,7 +47,8 @@ function create() {
   bullets.setAll('anchor.x', 0.5);
   bullets.setAll('anchor.y', 0.5);
   bullets.pivot.x = x1/2;
-  graphics.pivot.y = y1/2;
+  bullets.pivot.y = y1/2;
+
 }
 
 
@@ -67,6 +73,7 @@ function fireBullet () {
 
 
 function update() {
+
   if (cursors.left.isDown ){
         graphics.angle -= 3
   }
@@ -83,7 +90,7 @@ function update() {
   }
   screenWrap(graphics)
   bullets.forEachExists(screenWrap, this);
-  game.debug.spriteInfo(graphics, 32, 32);
+
 }
 
 function screenWrap(sprite) {
@@ -96,4 +103,9 @@ function screenWrap(sprite) {
   }else if(sprite.body.y < 0){
     sprite.body.y = w_height
   }
+}
+
+function render() {
+    game.debug.spriteInfo(graphics, 32, 32);
+    game.debug.body(graphics);
 }
