@@ -1,5 +1,4 @@
-var w_height, w_width, x1, y1;
-
+var w_height, w_width;
 w_height = 400;
 w_width = 400;
 var game = new Phaser.Game(w_height, w_width, Phaser.AUTO, '', { preload: preload, create: create, update: update });
@@ -22,7 +21,7 @@ function create() {
   graphics.pivot.x = 0;
   graphics.pivot.y = 30;
   graphics.anchor.setTo(0, 0);
-  game.physics.p2.enable(graphics);
+  //game.physics.p2.enable(graphics);
   cursors = game.input.keyboard.createCursorKeys();
 }
 
@@ -44,6 +43,12 @@ function update() {
   if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
 
   }
-
+  screenWrap(graphics)
   game.debug.spriteInfo(graphics, 32, 32);
+}
+
+function screenWrap(sprite) {
+  if(sprite.body.x > w_width){
+    sprite.body.x = 0
+  }
 }
