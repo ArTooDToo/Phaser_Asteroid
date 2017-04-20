@@ -14,41 +14,30 @@ var game = new Phaser.Game(w_height, w_width, Phaser.CANVAS, '', { preload: prel
 
 function preload() {
   game.load.image("bb", "bullet.png")
+  game.load.image("ship", "ship.png")
 }
 
 function create() {
-  graphics = game.add.graphics(w_height/2,w_width/2);
+  game.physics.startSystem(Phaser.Physics.ARCADE);
+graphics = game.add.sprite(200,200, 'ship');
+//nie działa wraz z generowanym tłem
+//game.renderer.clearBeforeRender = false;
+  game.renderer.roundPixels = true;
 
-  graphics.beginFill();
-  graphics.lineStyle(1, 0xFFFFFF, 1);
-  graphics.pivot.x = x1/2;
-  graphics.pivot.y = y1/2;
-  // draw a shape
-
-  graphics.angle = -90
-  graphics.anchor.set(0.5)
-  //graphics.lineTo(0,10)
-  graphics.lineTo(0,x1); //pionowa kreska
-  graphics.lineTo(y1,y1/2);
-
-  //graphics.drawCircle(0, 0, 100);
-  graphics.endFill();
-  cursors = game.input.keyboard.createCursorKeys();
-  game.physics.enable(graphics, Phaser.Physics.ARCADE);
-
-  //graphics.body.setSize(25, 25, 15, -15);
-
-  //graphics.body.collideWorldBounds = true;
-  //bb = game.add.graphics(w_height/2,w_width/2);
   bullets = game.add.group();
   bullets.enableBody = true;
   bullets.physicsBodyType = Phaser.Physics.ARCADE;
   bullets.createMultiple(40, "bb");
   bullets.setAll('anchor.x', 0.5);
   bullets.setAll('anchor.y', 0.5);
-  bullets.pivot.x = x1/2;
-  bullets.pivot.y = y1/2;
 
+
+  graphics.anchor.set(0.5)
+
+  graphics.angle = -90
+  game.physics.enable(graphics, Phaser.Physics.ARCADE);
+  graphics.body.collideWorldBounds = true;
+  cursors = game.input.keyboard.createCursorKeys();
 }
 
 
@@ -61,10 +50,10 @@ function fireBullet () {
 
         if (bullet)
         {
-            bullet.reset(graphics.body.x + 16, graphics.body.y + 16);
+            bullet.reset(graphics.body.x +25, graphics.body.y + 25);
             bullet.lifespan = 500;
             bullet.rotation = graphics.rotation;
-            game.physics.arcade.velocityFromRotation(graphics.rotation, 400, bullet.body.velocity);
+            game.physics.arcade.velocityFromRotation(graphics.rotation,400, bullet.body.velocity);
             bulletTime = game.time.now + 50;
         }
     }
@@ -75,10 +64,11 @@ function fireBullet () {
 function update() {
 
   if (cursors.left.isDown ){
-        graphics.angle -= 3
-  }
-  if (cursors.right.isDown){
-        graphics.angle += 3
+        graphics.body.angularVelocity = -300;
+  }else if (cursors.right.isDown){
+        graphics.body.angularVelocity = 300;
+  }else{
+    graphics.body.angularVelocity = 0;
   }
   if (cursors.up.isDown){
         game.physics.arcade.accelerationFromRotation(graphics.rotation, 100, graphics.body.acceleration);
@@ -108,4 +98,5 @@ function screenWrap(sprite) {
 function render() {
     game.debug.spriteInfo(graphics, 32, 32);
     game.debug.body(graphics);
+
 }
